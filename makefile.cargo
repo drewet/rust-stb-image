@@ -1,13 +1,23 @@
-ifeq (androideabi,$(findstring androideabi,$(TARGET)))
+ifeq (eabi,$(findstring eabi,$(TARGET)))
 
-CC := $(TARGET)-gcc
-AR := $(TARGET)-ar
+CC ?= $(TARGET)-gcc
+AR ?= $(TARGET)-ar
 
 else
 
 CC ?= gcc
 AR ?= ar
 
+endif
+
+ifeq (windows,$(findstring windows,$(TARGET)))
+    OSTYPE=windows
+    # cargo sets `$(OUT_DIR)` as native windows path. msys requires cygpath.
+    OUT_DIR:=$(shell cygpath "$(OUT_DIR)")
+    # msys sets `CC=cc` but there's no `cc.exe`. so we change it here.
+    ifeq (cc,$(CC))
+        CC:=gcc
+    endif
 endif
 
 CFLAGS += -fPIC
